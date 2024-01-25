@@ -371,9 +371,11 @@
 
     <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
     <br>
+    <br>
     <span id="busuanzi_container_site_pv">总访问量<span id="busuanzi_value_site_pv"></span>次</span>
     <span class="post-meta-divider">|</span>
     <span id="busuanzi_container_site_uv">总访客数<span id="busuanzi_value_site_uv"></span>人</span>
+    <br>
     <span class="post-meta-divider">|</span>
 <!-- 不蒜子计数初始值纠正 -->
 <script>
@@ -402,6 +404,23 @@ $(document).ready(function() {
 <!-- 网站运行时间的设置 -->
 <span id="timeDate">载入天数...</span>
 <span id="times">载入时分秒...</span>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wonderland运行时间</title>
+    <style>
+        .red { color: red; }
+        .orange { color: orange; }
+        .green { color: green; }
+        .cyan { color: cyan; }
+        .blue { color: blue; }
+        .purple { color: purple; }
+    </style>
+</head>
+<body>
+
 <script>
     var now = new Date();
     function createtime() {
@@ -413,8 +432,8 @@ $(document).ready(function() {
         mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;}
         seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
         snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;}
-        document.getElementById("timeDate").innerHTML = "本站已安全运行 "+dnum+" 天 ";
-        document.getElementById("times").innerHTML = hnum + " 小时 " + mnum + " 分 " + snum + " 秒.";
+        var displayText = "<span class='red'>W</span><span class='orange'>o</span><span class='green'>n</span><span class='cyan'>d</span><span class='blue'>e</span><span class='purple'>r</span><span class='red'>l</span><span class='orange'>a</span><span class='green'>n</span><span class='cyan'>d</span>已运行 " + dnum + " 天 ";
+document.getElementById("times").innerHTML = hnum + " 小时 " + mnum + " 分 " + snum + " 秒.";
     }
 setInterval("createtime()",250);
 </script>
