@@ -392,12 +392,7 @@ $(document).ready(function() {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wonderland运行时间</title>
     <style>
-        .red { color: red; }
-        .orange { color: orange; }
-        .green { color: green; }
-        .cyan { color: cyan; }
-        .blue { color: blue; }
-        .purple { color: purple; }
+        .gold { color: gold; }
     </style>
 </head>
 <body>
@@ -413,7 +408,8 @@ $(document).ready(function() {
         mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;}
         seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
         snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;}
-        var displayText = "<span class='red'>W</span><span class='orange'>o</span><span class='green'>n</span><span class='cyan'>d</span><span class='blue'>e</span><span class='purple'>r</span><span class='red'>l</span><span class='orange'>a</span><span class='green'>n</span><span class='cyan'>d</span>已运行 " + dnum + " 天 ";
+        var displayText = "<span class='gold'>Wonderland</span>已运行 " + dnum + " 天 ";
+
 document.getElementById("times").innerHTML = hnum + " 小时 " + mnum + " 分 " + snum + " 秒.";
     }
 setInterval("createtime()",250);
