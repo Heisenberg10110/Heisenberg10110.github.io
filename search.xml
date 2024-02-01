@@ -3,12 +3,15 @@
   <entry>
     <title>Welcome to maoerrrr wonderland！！</title>
     <url>/2024/01/25/welcom%20to%20maoerrrr%20wonderland/</url>
-    <content><![CDATA[]]></content>
+    <content><![CDATA[<p>在<font color="PINK">MAO<font color="nnnfxed">RRRR  <font color="orange">WON<font color="yellow">DER<font color="#87CEFA">LA<font color="Epurple">ND</font></font></font></font></font></font>里享受吧~~~</p>
+<p><font face="华文琥珀" size="4">文章推荐：<br>1.<a href="http://heisenberg-szh.com/2024/01/30/%E5%9F%BA%E4%BA%8E%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%A4%84%E7%90%86-bert-%E7%9A%84%E7%81%BE%E9%9A%BE%E7%9C%9F%E5%AE%9E%E6%80%A7%E9%A2%84%E6%B5%8B/">基于自然语言处理(bert)的灾难信息真实性预测</a></font></p>
+]]></content>
   </entry>
   <entry>
     <title>基于自然语言处理(bert)的灾难信息真实性预测</title>
     <url>/2024/01/30/%E5%9F%BA%E4%BA%8E%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%A4%84%E7%90%86-bert-%E7%9A%84%E7%81%BE%E9%9A%BE%E7%9C%9F%E5%AE%9E%E6%80%A7%E9%A2%84%E6%B5%8B/</url>
     <content><![CDATA[<h1 id="基于自然语言处理-bert-的灾难信息真实性预测"><a href="#基于自然语言处理-bert-的灾难信息真实性预测" class="headerlink" title="基于自然语言处理(bert)的灾难信息真实性预测"></a>基于自然语言处理(bert)的灾难信息真实性预测</h1><h2 id="问题背景"><a href="#问题背景" class="headerlink" title="问题背景"></a>问题背景</h2><p>&emsp;&emsp;微信朋友圈，微博，Twitter上有着众多用户的分享。可以成为紧急情况下的重要沟通渠道。智能手机的无处不在使人们能够实时宣布他们正在观察到的紧急情况。正因为如此，越来越多的机构（即救灾组织和新闻机构）对以程序化方式监控 Twitter 感兴趣。<br>&emsp;&emsp;但是，并不总是很清楚一个人的话是否真的在宣布一场灾难，正因如此，我们想要搭建一个模型，分析文段的信息，从而判断灾难信息的真实性。</p>
+<span id="more"></span>
 <h2 id="数据形式"><a href="#数据形式" class="headerlink" title="数据形式"></a>数据形式</h2><p>如：<br><font size="4"><center>训练集</center></font></p>
 <table>
 <thead>
