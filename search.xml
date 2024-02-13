@@ -8,219 +8,6 @@
 ]]></content>
   </entry>
   <entry>
-    <title>美赛回顾(二) · 文本处理</title>
-    <url>/2024/02/13/%E7%BE%8E%E8%B5%9B%E5%9B%9E%E9%A1%BE-%E4%BA%8C-%C2%B7%E6%96%87%E6%9C%AC%E5%A4%84%E7%90%86/</url>
-    <content><![CDATA[<h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>由前文<font face="华文琥珀" color="blue"><a href="http://heisenberg-szh.com/2024/02/10/%E7%BE%8E%E8%B5%9B%E5%9B%9E%E9%A1%BE-%E4%B8%80-%C2%B7%E7%88%AC%E8%99%AB/">美赛回顾(一) · 爬虫</a></font>已经爬取到了若干非法野生动物贸易的审判书文本信息，现在我们尝试获取文本之中的信息并制成可用表格。</p>
-<h1 id="数据形式"><a href="#数据形式" class="headerlink" title="数据形式"></a>数据形式</h1><p>- - - - - - - - - - - - - - - - - - - - -<br>Title: 云南普洱一男子非法运输穿山甲片被刑拘<br>Time: 2019-12-07 21:39:58<br>Link: <a href="https://www.cxxxxxxxt.org/article/detail/2019/12/id/4709300.shtml">https://www.cxxxxxxxt.org/article/detail/2019/12/id/4709300.shtml</a><br>Text:<br>近日，云南省普洱市宁洱县森林公安局查获一起非法运输珍贵濒危野生动物制品案，缴获国家二级保护动物穿山甲甲片0.95千克，抓获犯罪嫌疑人一名。<br>据介绍，宁洱县公安局民警在检查站开展公开查缉时，发现一名男子所骑的摩托车后备箱内一个塑料袋有疑似野生动物穿山甲制品，于是把案件移交给宁洱县森林公安局。<br>经审讯，摩托车驾驶员吕某昌交代，一个朋友托他从境外买点穿山甲片做药引子，并通过微信向他转了2000多元人民币。吕某昌随后在境外某集市花500多元人民币购买了这些穿山甲片，并驾驶自己的摩托车非法将穿山甲片运输入境。<br>经鉴定，这些制品确系国家二级保护野生动物穿山甲的甲片，数量为0.95千克。因涉嫌非法收购、运输珍贵濒危野生动物制品，吕某昌目前已被公安机关刑事拘留，案件还在进一步办理中。<br>- - - - - - - - - - - - - - - - - - - - -</p>
-<span id="more"></span>
-<h1 id="文本分析"><a href="#文本分析" class="headerlink" title="文本分析"></a>文本分析</h1><p>由于美赛时间紧迫，需要较短时间得出可用数据，私以为提取手法是过于粗糙的。今适逢春节，后续大创也事情繁多，这里就不重新修改，源码也就不放出来了T.T<br>简单说说大概思路吧~</p>
-<h2 id="预处理"><a href="#预处理" class="headerlink" title="预处理"></a>预处理</h2><p>把多次爬取的文本直接合成为一个word录入字符串变量，建立set集合，把链接相同的文章去除，达到不重复的目的。</p>
-<h2 id="提取文本信息"><a href="#提取文本信息" class="headerlink" title="提取文本信息"></a>提取文本信息</h2><p>设立滑窗，提取关键文本（如龟，竹鼠，虎 ···）附近的语段，采用正则表达式或自然语言模型如word2vec，甚至用本体提取等知识图谱相关知识可以提取地点，年份，人物，野生动物种类，数目等信息（如0.95千克穿山甲；316只竹鼠····）</p>
-<h1 id="有趣的点"><a href="#有趣的点" class="headerlink" title="有趣的点"></a>有趣的点</h1><p>采取字典可以便利地录入信息：<br>每一个link作为key便于提取文章的信息。</p>
-<p>采用多层字典，便捷地生成多层信息！</p>
-<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 年份字典</span></span><br><span class="line">year_phrases = [<span class="number">2016</span>, <span class="number">2017</span>, <span class="number">2018</span>, <span class="number">2019</span>, <span class="number">2020</span>, <span class="number">2021</span>, <span class="number">2022</span>, <span class="number">2023</span>, <span class="number">2024</span>]</span><br><span class="line">year_phrases_dict = &#123;year: defaultdict(<span class="built_in">int</span>) <span class="keyword">for</span> year <span class="keyword">in</span> year_phrases&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 省份内层字典</span></span><br><span class="line">sheng_phrases = [ </span><br><span class="line"><span class="string">&quot;河北&quot;</span>, <span class="string">&quot;山西&quot;</span>, <span class="string">&quot;辽宁&quot;</span>, <span class="string">&quot;吉林&quot;</span>, <span class="string">&quot;黑龙江&quot;</span>, <span class="string">&quot;江苏&quot;</span>, <span class="string">&quot;浙江&quot;</span>, <span class="string">&quot;安徽&quot;</span>, </span><br><span class="line"><span class="string">&quot;福建&quot;</span>, <span class="string">&quot;江西&quot;</span>, <span class="string">&quot;山东&quot;</span>, <span class="string">&quot;河南&quot;</span>, <span class="string">&quot;湖北&quot;</span>, <span class="string">&quot;湖南&quot;</span>, <span class="string">&quot;广东&quot;</span>, <span class="string">&quot;海南&quot;</span>, </span><br><span class="line"><span class="string">&quot;四川&quot;</span>, <span class="string">&quot;贵州&quot;</span>, <span class="string">&quot;云南&quot;</span>, <span class="string">&quot;陕西&quot;</span>,<span class="string">&quot;甘肃&quot;</span>, <span class="string">&quot;青海&quot;</span>, <span class="string">&quot;台湾&quot;</span>, <span class="string">&quot;内蒙&quot;</span>, </span><br><span class="line"><span class="string">&quot;广西&quot;</span>, <span class="string">&quot;西藏&quot;</span>, <span class="string">&quot;宁夏&quot;</span>, <span class="string">&quot;新疆&quot;</span>, <span class="string">&quot;北京&quot;</span>, <span class="string">&quot;天津&quot;</span>, <span class="string">&quot;上海&quot;</span>, <span class="string">&quot;重庆&quot;</span>, <span class="string">&quot;香港&quot;</span>, <span class="string">&quot;澳门&quot;</span>]</span><br><span class="line">·</span><br><span class="line">·</span><br><span class="line">·</span><br><span class="line">·</span><br><span class="line">·</span><br><span class="line">·</span><br><span class="line"><span class="keyword">for</span> year_ <span class="keyword">in</span> year_phrases_dict:</span><br><span class="line">  <span class="keyword">if</span> year_ == year:</span><br><span class="line">      year_phrases_dict[year][sheng] += extract_and_sum_numbers(sentence)</span><br></pre></td></tr></table></figure>
-<BR>
-
-<p>建立字典时定义了内层省份字典是defaultdict，遇到新出现的key时自动初始化为0，达到二维化数据的目的！稍后把提取到的数据变为Excel等文件就变得十分容易！</p>
-</BR>]]></content>
-      <categories>
-        <category>美赛</category>
-      </categories>
-      <tags>
-        <tag>NLP</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>美赛回顾(一) · 爬虫</title>
-    <url>/2024/02/10/%E7%BE%8E%E8%B5%9B%E5%9B%9E%E9%A1%BE-%E4%B8%80-%C2%B7%E7%88%AC%E8%99%AB/</url>
-    <content><![CDATA[<h2 id="SPIDER！"><a href="#SPIDER！" class="headerlink" title="SPIDER！"></a>SPIDER！</h2><p>前不久才刚刚初步学习了爬虫相关知识，跟随教程简单爬取了医院和招聘网站的信息，没想到在美赛实现了如此规模（<em><strong>170万字</strong></em>）的爬虫！！<font color="gold" size="5">Spider haunts at night！！ </font></p>
-<span id="more"></span>
-<h2 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h2><p><font size="4"><center><strong>Problem F: Reducing Illegal Wildlife Trade</strong></center></font></p>
-<!-- ![保护野生动物！](https://github.com/Heisenberg10110/images/blob/main/img/hu.png?raw=true) -->
-
-<p><img src="https://cdn.jsdelivr.net/gh/Heisenberg10110/images@a3bff6235056131ac745bec7edf13129a95b0315/img/%E7%88%AC%E8%99%AB/hu.png" alt="保护野生动物！"><br></p>
-<blockquote>
-<p><font face="斜体"><strong>Illegal wildlife trade</strong> negatively impacts our environment and threatens global biodiversity. It is<br>estimated to involve up to 26.5 billion US dollars per year and is considered to be the fourth<br>largest of all global illegal trades.<br>[1] You are to develop a data-driven 5-year project designed to make a notable reduction in illegal wildlife trade. Your goal is to convince a client to carry out your project. To do this, you must select both a client and an appropriate project for that client.<br>Your work should explore the following sub-questions:<br>● Who is your client? What can that client realistically do? (In other words, your client should have the powers, resources, and interest needed to enact the project you propose.)<br>● Explain why the project you developed is suitable for this client. What research, from published literature and from your own analyses, supports the selection of your proposed project? Using a data-driven analysis, how will you convince your client that this is a project they should undertake?<br>● What additional powers and resources will your client need to carry out the project? (Remember to use assumptions, but also ground your work in reality as much as you are able.)<br>● If the project is carried out what will happen? In other words, what will the measurable impact on illegal wildlife trade be? What analysis did you do to determine this?<br>● How likely is the project to reach the expected goal? Also, based on a contextualized sensitivity analysis, are there conditions or events that may disproportionately aid or harm the project’s ability to reach its goal?<br>While you could limit your approach to illegal wildlife trade, you may also consider illegal wildlife trade as part of a larger complex system. Specifically, you could consider how other global efforts in other domains, e.g., efforts to curtail other forms of trafficking or efforts to reduce climate change coupled with efforts to curtail illegal wildlife trade, may be part of a complex system. This may create synergistic opportunities for unexpected actors in this domain.<br>If you choose to leverage a complexity framework in your solution, be sure to justify your choice by discussing the benefits and drawbacks of this modeling decision.Additionally, your team must submit a 1-page memo with key points for your client, highlighting your 5-year project proposal and why the project is right for them as a client (e.g., access to resources, part of their mandate, aligns with their mission statement, etc.) </font></p>
-</blockquote>
-<h2 id="目标"><a href="#目标" class="headerlink" title="目标"></a>目标</h2><p>经过一番国际层面的研究，我们把最终的客户锁定在中国。于是，找到中国非法贸易的数据并分析成为了目标，可以从非法贸易的审判书等资料获取。</p>
-<h2 id="Spider！"><a href="#Spider！" class="headerlink" title="Spider！"></a>Spider！</h2><p>导入所需的库</p>
-<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> bs4 <span class="keyword">import</span> BeautifulSoup</span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">from</span> selenium <span class="keyword">import</span> webdriver</span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line"><span class="keyword">from</span> urllib.parse <span class="keyword">import</span> urljoin</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">import</span> random</span><br></pre></td></tr></table></figure>
-<h3 id="定位"><a href="#定位" class="headerlink" title="定位"></a>定位</h3><figure class="highlight py"><table><tr><td class="code"><pre><span class="line">driver = webdriver.Edge()</span><br><span class="line">base_url = <span class="string">&#x27;https://www.cxxxxxxxt.org&#x27;</span>  </span><br><span class="line"><span class="comment"># 找到网站</span></span><br><span class="line">search_url = <span class="string">&#x27;/article/essearch/keyword/%E6%BF%92%E5%8D%B1%E9%87%8E%E7%94%9F%E5%8A%A8%E7%89%A9/ticket/tr035hZedznczbY7Ag34pg1wQntELscZW2dBZKhpuNgKwxD1WX7e4Kig_5yZvIrabqf3ozOiJGrYsZT8-ZeJtjykVi42K8IMCfTc5eJKE0UgmzoUqX-zb4oO4A%2A%2A/appid/2056206409/randstr/%40WT4/content_time_publish_begin/2016-01-01/content_time_publish_end/2024-02-03/page/&#x27;</span></span><br><span class="line"><span class="comment"># 定位————根据页数 为后续翻页形成模板</span></span><br></pre></td></tr></table></figure>
-<figure class="highlight py"><table><tr><td class="code"><pre><span class="line">page_url = <span class="string">f&#x27;<span class="subst">&#123;base_url&#125;</span><span class="subst">&#123;search_url&#125;</span><span class="subst">&#123;<span class="number">1</span>&#125;</span>.shtml&#x27;</span></span><br><span class="line"><span class="comment"># 定位第一页</span></span><br><span class="line"></span><br><span class="line">driver.get(page_url)</span><br><span class="line">html_content = driver.page_source.encode(<span class="string">&#x27;utf-8&#x27;</span>)</span><br><span class="line">soup = BeautifulSoup(html_content, <span class="string">&#x27;lxml&#x27;</span>)</span><br><span class="line">pagination_div = soup.find(<span class="string">&#x27;div&#x27;</span>, class_=<span class="string">&#x27;paginationControl&#x27;</span>)</span><br><span class="line"><span class="comment"># 发送HTTP请求并获取页面内容</span></span><br></pre></td></tr></table></figure>
-<figure class="highlight py"><table><tr><td class="code"><pre><span class="line">last_page_link = soup.find(<span class="string">&#x27;a&#x27;</span>, text=<span class="string">&#x27;尾页&#x27;</span>)</span><br><span class="line"><span class="comment"># 定位尾页</span></span><br><span class="line"><span class="keyword">if</span> last_page_link:</span><br><span class="line">    last_page_url = last_page_link[<span class="string">&#x27;href&#x27;</span>]</span><br><span class="line">    <span class="comment"># 提取尾页的页码信息</span></span><br><span class="line">    max_page = <span class="built_in">int</span>(last_page_url.split(<span class="string">&#x27;/&#x27;</span>)[-<span class="number">1</span>].split(<span class="string">&#x27;.&#x27;</span>)[<span class="number">0</span>])</span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;总共有 <span class="subst">&#123;max_page&#125;</span> 页&quot;</span>)</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;未找到页码信息&quot;</span>)</span><br></pre></td></tr></table></figure>
-<p>到这里，我们可以实现对搜索内容相关的每一页，每一篇文章进行遍历</p>
-<h3 id="爬取"><a href="#爬取" class="headerlink" title="爬取"></a>爬取</h3><figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> docx <span class="keyword">import</span> Document</span><br><span class="line">doc = Document() </span><br><span class="line"><span class="comment"># 打开我们要存入的word文档</span></span><br><span class="line"></span><br><span class="line">std = <span class="number">0</span></span><br><span class="line"><span class="comment">#为遍历文章数计数</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> page_number <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>, max_page+<span class="number">1</span>):  <span class="comment"># 从首页遍历到尾页</span></span><br><span class="line">    page_url = <span class="string">f&#x27;<span class="subst">&#123;base_url&#125;</span><span class="subst">&#123;search_url&#125;</span><span class="subst">&#123;page_number&#125;</span>.shtml&#x27;</span></span><br><span class="line">    driver.get(page_url)</span><br><span class="line">    <span class="comment">#定位某一页</span></span><br><span class="line"></span><br><span class="line">    html_content = driver.page_source.encode(<span class="string">&#x27;utf-8&#x27;</span>)</span><br><span class="line">    soup = BeautifulSoup(html_content, <span class="string">&#x27;lxml&#x27;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 查找&lt;dt&gt;标签下的所有链接</span></span><br><span class="line">    dt_tags = soup.find_all(<span class="string">&#x27;dt&#x27;</span>)</span><br><span class="line">    <span class="comment"># 好好观察F12页面各个参数</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 遍历每个链接</span></span><br><span class="line">    <span class="keyword">for</span> dt_tag <span class="keyword">in</span> dt_tags:</span><br><span class="line">        std = std + <span class="number">1</span></span><br><span class="line">        a_tag = dt_tag.find(<span class="string">&#x27;a&#x27;</span>)</span><br><span class="line">        <span class="keyword">if</span> a_tag:</span><br><span class="line">            relative_link = a_tag.get(<span class="string">&#x27;href&#x27;</span>)</span><br><span class="line"></span><br><span class="line">            <span class="comment"># 将相对链接转换为绝对链接，找到文章的链接</span></span><br><span class="line">            absolute_link = urljoin(base_url, relative_link)</span><br><span class="line"></span><br><span class="line">            <span class="comment"># 访问链接并获取页面内容</span></span><br><span class="line">            driver.get(absolute_link)</span><br><span class="line">            html_content1 = driver.page_source.encode(<span class="string">&#x27;utf-8&#x27;</span>)</span><br><span class="line">            soup1 = BeautifulSoup(html_content1, <span class="string">&#x27;lxml&#x27;</span>)</span><br><span class="line"></span><br><span class="line">            <span class="comment"># 提取标题</span></span><br><span class="line">            title = soup1.find(<span class="string">&#x27;div&#x27;</span>, class_=<span class="string">&#x27;detail_bigtitle&#x27;</span>)</span><br><span class="line">            title_text = title.get_text(strip=<span class="literal">True</span>) <span class="keyword">if</span> title <span class="keyword">else</span> <span class="string">&quot;No title found&quot;</span></span><br><span class="line"></span><br><span class="line">            <span class="keyword">try</span>:</span><br><span class="line">                time_span = soup1.find(<span class="string">&#x27;div&#x27;</span>, class_=<span class="string">&#x27;detail_thr&#x27;</span>).find(<span class="string">&#x27;span&#x27;</span>, class_=<span class="string">&#x27;time&#x27;</span>)</span><br><span class="line">                <span class="comment"># 有的文章已经过期，提取time会失败，采用try来规避</span></span><br><span class="line">            <span class="keyword">except</span>:</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">&quot;no time now&quot;</span>)</span><br><span class="line">                <span class="keyword">pass</span></span><br><span class="line">            </span><br><span class="line">            <span class="comment"># 提取时间</span></span><br><span class="line">            timeo = time_span.get_text(strip=<span class="literal">True</span>) <span class="comment"># 与time库重，不能取time变量名</span></span><br><span class="line"></span><br><span class="line">            <span class="comment"># 提取主体文字</span></span><br><span class="line">            detail_txt_div = soup1.find(<span class="string">&#x27;div&#x27;</span>, class_=<span class="string">&#x27;detail_txt&#x27;</span>)</span><br><span class="line">            <span class="keyword">if</span> detail_txt_div: <span class="comment"># if也是一种规避方法</span></span><br><span class="line">                paragraphs = detail_txt_div.find_all(<span class="string">&#x27;p&#x27;</span>) <span class="comment"># 每一段用&#x27;p&#x27;隔开</span></span><br><span class="line">                link_text = <span class="string">&#x27;\n&#x27;</span>.join([p.get_text(strip=<span class="literal">True</span>) <span class="keyword">for</span> p <span class="keyword">in</span> paragraphs])</span><br><span class="line"></span><br><span class="line">                <span class="comment"># 写入打开的word文档</span></span><br><span class="line">                doc.add_paragraph(<span class="string">f&quot;Title: <span class="subst">&#123;title_text&#125;</span>&quot;</span>)</span><br><span class="line">                doc.add_paragraph(<span class="string">f&quot;Time: <span class="subst">&#123;timeo&#125;</span>&quot;</span>)</span><br><span class="line">                doc.add_paragraph(<span class="string">f&quot;Link: <span class="subst">&#123;absolute_link&#125;</span>&quot;</span>)</span><br><span class="line">                doc.add_paragraph(<span class="string">f&quot;Text:\n<span class="subst">&#123;link_text&#125;</span>&quot;</span>)</span><br><span class="line">                doc.add_paragraph(<span class="string">&#x27;-&#x27;</span> * <span class="number">30</span>)</span><br><span class="line">                random_sleep_time = random.uniform(<span class="number">1</span>, <span class="number">2</span>)</span><br><span class="line">                <span class="comment"># 执行随机停顿</span></span><br><span class="line">                time.sleep(random_sleep_time)</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&#x27;已经爬了<span class="subst">&#123;std&#125;</span>篇文章，<span class="subst">&#123;page_number&#125;</span>页，还剩<span class="subst">&#123;max_page-page_number&#125;</span>页&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 保存Word文档</span></span><br><span class="line">doc.save(<span class="string">&#x27;output.docx&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 关闭浏览器</span></span><br><span class="line">driver.quit()</span><br></pre></td></tr></table></figure>
-<h2 id="完工！"><a href="#完工！" class="headerlink" title="完工！"></a>完工！</h2><p><img src="https://cdn.jsdelivr.net/gh/Heisenberg10110/images@a3bff6235056131ac745bec7edf13129a95b0315/img/%E7%88%AC%E8%99%AB/%E5%AD%97%E6%95%B0.png"></p>
-<p>170万字 1400+篇文章！！！</p>
-]]></content>
-      <categories>
-        <category>美赛</category>
-      </categories>
-      <tags>
-        <tag>spider</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>美赛回顾(三) · 制图</title>
-    <url>/2024/02/08/%E7%BE%8E%E8%B5%9B%E5%9B%9E%E9%A1%BE-%E4%B8%89-%C2%B7%E5%88%B6%E5%9B%BE/</url>
-    <content><![CDATA[<h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>在前文<font face="华文琥珀" color="blue"><a href="http://heisenberg-szh.com/2024/02/13/%E7%BE%8E%E8%B5%9B%E5%9B%9E%E9%A1%BE-%E4%BA%8C-%C2%B7%E6%96%87%E6%9C%AC%E5%A4%84%E7%90%86/">美赛回顾(二) · 文本处理</a></font>中已经得到表格数据，找到了年份，月份，省份以及动物种类两两之间的关系。这篇文章将回顾将这些数据可视化的过程！<br><font face="幼圆" color="gray" size="2">以便投入到美术建模的美赛之中···<BR></BR></font></p>
-<span id="more"></span>
-<h1 id="数据形式"><a href="#数据形式" class="headerlink" title="数据形式"></a>数据形式</h1><p>这里用省份年份为例，作中国地图非法野生动物贸易数据的可视化。</p>
-<table>
-<thead>
-<tr>
-<th align="center">省份</th>
-<th align="center">上海市</th>
-<th align="center">云南省</th>
-<th align="center">内蒙古自治区</th>
-<th align="center">北京市</th>
-<th align="center">台湾省</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">SUM</td>
-<td align="center">18585</td>
-<td align="center">22545</td>
-<td align="center">13852</td>
-<td align="center">27439</td>
-<td align="center">2</td>
-</tr>
-</tbody></table>
-<table>
-<thead>
-<tr>
-<th align="center">省份</th>
-<th align="center">吉林省</th>
-<th align="center">四川省</th>
-<th align="center">天津市</th>
-<th align="center">宁夏回族自治区</th>
-<th align="center">安徽省</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">SUM</td>
-<td align="center">4260</td>
-<td align="center">28498</td>
-<td align="center">20377</td>
-<td align="center">6097</td>
-<td align="center">14374</td>
-</tr>
-</tbody></table>
-<table>
-<thead>
-<tr>
-<th align="center">省份</th>
-<th align="center">山东省</th>
-<th align="center">山西省</th>
-<th align="center">广东省</th>
-<th align="center">广西壮族自治区</th>
-<th align="center">新疆维吾尔自治区</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">SUM</td>
-<td align="center">28115</td>
-<td align="center">7463</td>
-<td align="center">42048</td>
-<td align="center">24932</td>
-<td align="center">9304</td>
-</tr>
-</tbody></table>
-<table>
-<thead>
-<tr>
-<th align="center">省份</th>
-<th align="center">江苏省</th>
-<th align="center">江西省</th>
-<th align="center">河北省</th>
-<th align="center">河南省</th>
-<th align="center">浙江省</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">SUM</td>
-<td align="center">29962</td>
-<td align="center">25821</td>
-<td align="center">22042</td>
-<td align="center">3444</td>
-<td align="center">15372</td>
-</tr>
-</tbody></table>
-<table>
-<thead>
-<tr>
-<th align="center">省份</th>
-<th align="center">海南省</th>
-<th align="center">湖北省</th>
-<th align="center">湖南省</th>
-<th align="center">澳门特别行政区</th>
-<th align="center">甘肃省</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">SUM</td>
-<td align="center">6323</td>
-<td align="center">17308</td>
-<td align="center">16968</td>
-<td align="center">0</td>
-<td align="center">3923</td>
-</tr>
-</tbody></table>
-<table>
-<thead>
-<tr>
-<th align="center">省份</th>
-<th align="center">福建省</th>
-<th align="center">西藏自治区</th>
-<th align="center">贵州省</th>
-<th align="center">辽宁省</th>
-<th align="center">重庆市</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">SUM</td>
-<td align="center">16697</td>
-<td align="center">4781</td>
-<td align="center">12736</td>
-<td align="center">14291</td>
-<td align="center">9265</td>
-</tr>
-</tbody></table>
-<table>
-<thead>
-<tr>
-<th align="center">省份</th>
-<th align="center">陕西省</th>
-<th align="center">青海省</th>
-<th align="center">香港特别行政区</th>
-<th align="center">黑龙江省</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">SUM</td>
-<td align="center">4184</td>
-<td align="center">8023</td>
-<td align="center">174</td>
-<td align="center">5605</td>
-</tr>
-</tbody></table>
-<h1 id="作图"><a href="#作图" class="headerlink" title="作图"></a>作图</h1><h2 id="导入库和数据"><a href="#导入库和数据" class="headerlink" title="导入库和数据"></a>导入库和数据</h2><figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> pyecharts <span class="keyword">import</span> options <span class="keyword">as</span> opts</span><br><span class="line"><span class="keyword">from</span> pyecharts.charts <span class="keyword">import</span> Map</span><br><span class="line"><span class="keyword">from</span> pyecharts.<span class="built_in">globals</span> <span class="keyword">import</span> ThemeType</span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="comment"># 获取桌面路径</span></span><br><span class="line">desktop_path = os.path.join(os.path.expanduser(<span class="string">&quot;~&quot;</span>), <span class="string">&quot;Desktop&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 生成 CSV 文件的完整路径</span></span><br><span class="line">csv_file_path = os.path.join(desktop_path, <span class="string">&quot;sheng_year.csv&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用 pandas 读取 CSV 文件</span></span><br><span class="line">data = pd.read_csv(csv_file_path, encoding=<span class="string">&#x27;GBK&#x27;</span>)</span><br><span class="line"><span class="comment"># GBK或是UTF-8都可以试试！</span></span><br><span class="line"><span class="built_in">print</span>(data)</span><br><span class="line"><span class="comment"># 看看数据是不是正确形式</span></span><br></pre></td></tr></table></figure>
-<h2 id="创建图表"><a href="#创建图表" class="headerlink" title="创建图表"></a>创建图表</h2><figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 创建 Map 图表</span></span><br><span class="line">map_chart = Map(init_opts=opts.InitOpts(theme=ThemeType.LIGHT))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置参数</span></span><br><span class="line"><span class="keyword">from</span> pyecharts <span class="keyword">import</span> options <span class="keyword">as</span> opts</span><br><span class="line">province_column = data.columns[<span class="number">0</span>]</span><br><span class="line">data_column = data.columns[<span class="number">1</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 将 zip 结果转换为列表</span></span><br><span class="line">data_list = <span class="built_in">list</span>(<span class="built_in">zip</span>(data[province_column], data[data_column]))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 添加数据</span></span><br><span class="line">map_chart.add(<span class="string">&quot;China Map&quot;</span>, data_list,</span><br><span class="line">              maptype=<span class="string">&quot;china&quot;</span>, label_opts=opts.LabelOpts(is_show=<span class="literal">False</span>),</span><br><span class="line">              is_map_symbol_show=<span class="literal">False</span>)</span><br><span class="line"><span class="comment"># 设置全局参数</span></span><br><span class="line">map_chart.set_global_opts(</span><br><span class="line">    title_opts=opts.TitleOpts(title=<span class="string">&quot;World Map&quot;</span>),</span><br><span class="line">    visualmap_opts=opts.VisualMapOpts(</span><br><span class="line">        is_piecewise=<span class="literal">False</span>,</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 定义红橙黄绿蓝紫的渐变颜色</span></span><br><span class="line">        range_color=[<span class="string">&quot;#288A2B&quot;</span>, <span class="string">&quot;#EAC863&quot;</span>, <span class="string">&quot;#D84D5C&quot;</span>],</span><br><span class="line">        max_=<span class="number">42000</span>,  <span class="comment"># 最大值</span></span><br><span class="line">        min_=<span class="number">0</span>,  <span class="comment"># 最小值</span></span><br><span class="line">        orient=<span class="string">&quot;horizontal&quot;</span>,  <span class="comment"># 渐变色方向</span></span><br><span class="line">        pos_top=<span class="string">&quot;80%&quot;</span>,  <span class="comment"># 设置位置</span></span><br><span class="line">        pos_right=<span class="string">&quot;55%&quot;</span>,</span><br><span class="line">    ),</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 绘制地图</span></span><br><span class="line">map_chart.render(path=<span class="string">&quot;test_bar.html&quot;</span>)</span><br><span class="line"><span class="keyword">import</span> webbrowser</span><br><span class="line">webbrowser.<span class="built_in">open</span>(<span class="string">&quot;test_bar.html&quot;</span>)</span><br></pre></td></tr></table></figure>
-<p><font size="5">效果：</font><br><img src="https://cdn.jsdelivr.net/gh/Heisenberg10110/images@main/img/%E5%88%B6%E5%9B%BE/china.jpg"></p>
-<h1 id="美术建模！"><a href="#美术建模！" class="headerlink" title="美术建模！"></a>美术建模！</h1><p>其他工具也很重要！！ppt和photoshop的使用可以让建模更加<font face="幼圆" color="#00a8cc" size="4">美术!</font><br>让我们来欣赏~~~~</p>
-<center class="half">
-<img src="https://cdn.jsdelivr.net/gh/Heisenberg10110/images@main/img/%E5%88%B6%E5%9B%BE/world.jpg" width="00/">
-<img src="https://cdn.jsdelivr.net/gh/Heisenberg10110/images@main/img/%E5%88%B6%E5%9B%BE/%E7%89%A9%E7%A7%8D.jpg" width="200/">
-</center>
-]]></content>
-      <categories>
-        <category>美赛</category>
-      </categories>
-      <tags>
-        <tag>map</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>基于自然语言处理(bert)的灾难信息真实性预测</title>
     <url>/2024/01/30/%E5%9F%BA%E4%BA%8E%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%A4%84%E7%90%86-bert-%E7%9A%84%E7%81%BE%E9%9A%BE%E7%9C%9F%E5%AE%9E%E6%80%A7%E9%A2%84%E6%B5%8B/</url>
     <content><![CDATA[<h1 id="基于自然语言处理-bert-的灾难信息真实性预测"><a href="#基于自然语言处理-bert-的灾难信息真实性预测" class="headerlink" title="基于自然语言处理(bert)的灾难信息真实性预测"></a>基于自然语言处理(bert)的灾难信息真实性预测</h1><h2 id="问题背景"><a href="#问题背景" class="headerlink" title="问题背景"></a>问题背景</h2><p>&emsp;&emsp;微信朋友圈，微博，Twitter上有着众多用户的分享。可以成为紧急情况下的重要沟通渠道。智能手机的无处不在使人们能够实时宣布他们正在观察到的紧急情况。正因为如此，越来越多的机构（即救灾组织和新闻机构）对以程序化方式监控 Twitter 感兴趣。<br>&emsp;&emsp;但是，并不总是很清楚一个人的话是否真的在宣布一场灾难，正因如此，我们想要搭建一个模型，分析文段的信息，从而判断灾难信息的真实性。</p>
@@ -430,6 +217,219 @@
       <tags>
         <tag>NLP</tag>
         <tag>deep learning</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>美赛回顾(一) · 爬虫</title>
+    <url>/2024/02/10/%E7%BE%8E%E8%B5%9B%E5%9B%9E%E9%A1%BE-%E4%B8%80-%C2%B7%E7%88%AC%E8%99%AB/</url>
+    <content><![CDATA[<h2 id="SPIDER！"><a href="#SPIDER！" class="headerlink" title="SPIDER！"></a>SPIDER！</h2><p>前不久才刚刚初步学习了爬虫相关知识，跟随教程简单爬取了医院和招聘网站的信息，没想到在美赛实现了如此规模（<em><strong>170万字</strong></em>）的爬虫！！<font color="gold" size="5">Spider haunts at night！！ </font></p>
+<span id="more"></span>
+<h2 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h2><p><font size="4"><center><strong>Problem F: Reducing Illegal Wildlife Trade</strong></center></font></p>
+<!-- ![保护野生动物！](https://github.com/Heisenberg10110/images/blob/main/img/hu.png?raw=true) -->
+
+<p><img src="https://cdn.jsdelivr.net/gh/Heisenberg10110/images@a3bff6235056131ac745bec7edf13129a95b0315/img/%E7%88%AC%E8%99%AB/hu.png" alt="保护野生动物！"><br></p>
+<blockquote>
+<p><font face="斜体"><strong>Illegal wildlife trade</strong> negatively impacts our environment and threatens global biodiversity. It is<br>estimated to involve up to 26.5 billion US dollars per year and is considered to be the fourth<br>largest of all global illegal trades.<br>[1] You are to develop a data-driven 5-year project designed to make a notable reduction in illegal wildlife trade. Your goal is to convince a client to carry out your project. To do this, you must select both a client and an appropriate project for that client.<br>Your work should explore the following sub-questions:<br>● Who is your client? What can that client realistically do? (In other words, your client should have the powers, resources, and interest needed to enact the project you propose.)<br>● Explain why the project you developed is suitable for this client. What research, from published literature and from your own analyses, supports the selection of your proposed project? Using a data-driven analysis, how will you convince your client that this is a project they should undertake?<br>● What additional powers and resources will your client need to carry out the project? (Remember to use assumptions, but also ground your work in reality as much as you are able.)<br>● If the project is carried out what will happen? In other words, what will the measurable impact on illegal wildlife trade be? What analysis did you do to determine this?<br>● How likely is the project to reach the expected goal? Also, based on a contextualized sensitivity analysis, are there conditions or events that may disproportionately aid or harm the project’s ability to reach its goal?<br>While you could limit your approach to illegal wildlife trade, you may also consider illegal wildlife trade as part of a larger complex system. Specifically, you could consider how other global efforts in other domains, e.g., efforts to curtail other forms of trafficking or efforts to reduce climate change coupled with efforts to curtail illegal wildlife trade, may be part of a complex system. This may create synergistic opportunities for unexpected actors in this domain.<br>If you choose to leverage a complexity framework in your solution, be sure to justify your choice by discussing the benefits and drawbacks of this modeling decision.Additionally, your team must submit a 1-page memo with key points for your client, highlighting your 5-year project proposal and why the project is right for them as a client (e.g., access to resources, part of their mandate, aligns with their mission statement, etc.) </font></p>
+</blockquote>
+<h2 id="目标"><a href="#目标" class="headerlink" title="目标"></a>目标</h2><p>经过一番国际层面的研究，我们把最终的客户锁定在中国。于是，找到中国非法贸易的数据并分析成为了目标，可以从非法贸易的审判书等资料获取。</p>
+<h2 id="Spider！"><a href="#Spider！" class="headerlink" title="Spider！"></a>Spider！</h2><p>导入所需的库</p>
+<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> bs4 <span class="keyword">import</span> BeautifulSoup</span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">from</span> selenium <span class="keyword">import</span> webdriver</span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line"><span class="keyword">from</span> urllib.parse <span class="keyword">import</span> urljoin</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">import</span> random</span><br></pre></td></tr></table></figure>
+<h3 id="定位"><a href="#定位" class="headerlink" title="定位"></a>定位</h3><figure class="highlight py"><table><tr><td class="code"><pre><span class="line">driver = webdriver.Edge()</span><br><span class="line">base_url = <span class="string">&#x27;https://www.cxxxxxxxt.org&#x27;</span>  </span><br><span class="line"><span class="comment"># 找到网站</span></span><br><span class="line">search_url = <span class="string">&#x27;/article/essearch/keyword/%E6%BF%92%E5%8D%B1%E9%87%8E%E7%94%9F%E5%8A%A8%E7%89%A9/ticket/tr035hZedznczbY7Ag34pg1wQntELscZW2dBZKhpuNgKwxD1WX7e4Kig_5yZvIrabqf3ozOiJGrYsZT8-ZeJtjykVi42K8IMCfTc5eJKE0UgmzoUqX-zb4oO4A%2A%2A/appid/2056206409/randstr/%40WT4/content_time_publish_begin/2016-01-01/content_time_publish_end/2024-02-03/page/&#x27;</span></span><br><span class="line"><span class="comment"># 定位————根据页数 为后续翻页形成模板</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight py"><table><tr><td class="code"><pre><span class="line">page_url = <span class="string">f&#x27;<span class="subst">&#123;base_url&#125;</span><span class="subst">&#123;search_url&#125;</span><span class="subst">&#123;<span class="number">1</span>&#125;</span>.shtml&#x27;</span></span><br><span class="line"><span class="comment"># 定位第一页</span></span><br><span class="line"></span><br><span class="line">driver.get(page_url)</span><br><span class="line">html_content = driver.page_source.encode(<span class="string">&#x27;utf-8&#x27;</span>)</span><br><span class="line">soup = BeautifulSoup(html_content, <span class="string">&#x27;lxml&#x27;</span>)</span><br><span class="line">pagination_div = soup.find(<span class="string">&#x27;div&#x27;</span>, class_=<span class="string">&#x27;paginationControl&#x27;</span>)</span><br><span class="line"><span class="comment"># 发送HTTP请求并获取页面内容</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight py"><table><tr><td class="code"><pre><span class="line">last_page_link = soup.find(<span class="string">&#x27;a&#x27;</span>, text=<span class="string">&#x27;尾页&#x27;</span>)</span><br><span class="line"><span class="comment"># 定位尾页</span></span><br><span class="line"><span class="keyword">if</span> last_page_link:</span><br><span class="line">    last_page_url = last_page_link[<span class="string">&#x27;href&#x27;</span>]</span><br><span class="line">    <span class="comment"># 提取尾页的页码信息</span></span><br><span class="line">    max_page = <span class="built_in">int</span>(last_page_url.split(<span class="string">&#x27;/&#x27;</span>)[-<span class="number">1</span>].split(<span class="string">&#x27;.&#x27;</span>)[<span class="number">0</span>])</span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;总共有 <span class="subst">&#123;max_page&#125;</span> 页&quot;</span>)</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;未找到页码信息&quot;</span>)</span><br></pre></td></tr></table></figure>
+<p>到这里，我们可以实现对搜索内容相关的每一页，每一篇文章进行遍历</p>
+<h3 id="爬取"><a href="#爬取" class="headerlink" title="爬取"></a>爬取</h3><figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> docx <span class="keyword">import</span> Document</span><br><span class="line">doc = Document() </span><br><span class="line"><span class="comment"># 打开我们要存入的word文档</span></span><br><span class="line"></span><br><span class="line">std = <span class="number">0</span></span><br><span class="line"><span class="comment">#为遍历文章数计数</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> page_number <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>, max_page+<span class="number">1</span>):  <span class="comment"># 从首页遍历到尾页</span></span><br><span class="line">    page_url = <span class="string">f&#x27;<span class="subst">&#123;base_url&#125;</span><span class="subst">&#123;search_url&#125;</span><span class="subst">&#123;page_number&#125;</span>.shtml&#x27;</span></span><br><span class="line">    driver.get(page_url)</span><br><span class="line">    <span class="comment">#定位某一页</span></span><br><span class="line"></span><br><span class="line">    html_content = driver.page_source.encode(<span class="string">&#x27;utf-8&#x27;</span>)</span><br><span class="line">    soup = BeautifulSoup(html_content, <span class="string">&#x27;lxml&#x27;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 查找&lt;dt&gt;标签下的所有链接</span></span><br><span class="line">    dt_tags = soup.find_all(<span class="string">&#x27;dt&#x27;</span>)</span><br><span class="line">    <span class="comment"># 好好观察F12页面各个参数</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 遍历每个链接</span></span><br><span class="line">    <span class="keyword">for</span> dt_tag <span class="keyword">in</span> dt_tags:</span><br><span class="line">        std = std + <span class="number">1</span></span><br><span class="line">        a_tag = dt_tag.find(<span class="string">&#x27;a&#x27;</span>)</span><br><span class="line">        <span class="keyword">if</span> a_tag:</span><br><span class="line">            relative_link = a_tag.get(<span class="string">&#x27;href&#x27;</span>)</span><br><span class="line"></span><br><span class="line">            <span class="comment"># 将相对链接转换为绝对链接，找到文章的链接</span></span><br><span class="line">            absolute_link = urljoin(base_url, relative_link)</span><br><span class="line"></span><br><span class="line">            <span class="comment"># 访问链接并获取页面内容</span></span><br><span class="line">            driver.get(absolute_link)</span><br><span class="line">            html_content1 = driver.page_source.encode(<span class="string">&#x27;utf-8&#x27;</span>)</span><br><span class="line">            soup1 = BeautifulSoup(html_content1, <span class="string">&#x27;lxml&#x27;</span>)</span><br><span class="line"></span><br><span class="line">            <span class="comment"># 提取标题</span></span><br><span class="line">            title = soup1.find(<span class="string">&#x27;div&#x27;</span>, class_=<span class="string">&#x27;detail_bigtitle&#x27;</span>)</span><br><span class="line">            title_text = title.get_text(strip=<span class="literal">True</span>) <span class="keyword">if</span> title <span class="keyword">else</span> <span class="string">&quot;No title found&quot;</span></span><br><span class="line"></span><br><span class="line">            <span class="keyword">try</span>:</span><br><span class="line">                time_span = soup1.find(<span class="string">&#x27;div&#x27;</span>, class_=<span class="string">&#x27;detail_thr&#x27;</span>).find(<span class="string">&#x27;span&#x27;</span>, class_=<span class="string">&#x27;time&#x27;</span>)</span><br><span class="line">                <span class="comment"># 有的文章已经过期，提取time会失败，采用try来规避</span></span><br><span class="line">            <span class="keyword">except</span>:</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">&quot;no time now&quot;</span>)</span><br><span class="line">                <span class="keyword">pass</span></span><br><span class="line">            </span><br><span class="line">            <span class="comment"># 提取时间</span></span><br><span class="line">            timeo = time_span.get_text(strip=<span class="literal">True</span>) <span class="comment"># 与time库重，不能取time变量名</span></span><br><span class="line"></span><br><span class="line">            <span class="comment"># 提取主体文字</span></span><br><span class="line">            detail_txt_div = soup1.find(<span class="string">&#x27;div&#x27;</span>, class_=<span class="string">&#x27;detail_txt&#x27;</span>)</span><br><span class="line">            <span class="keyword">if</span> detail_txt_div: <span class="comment"># if也是一种规避方法</span></span><br><span class="line">                paragraphs = detail_txt_div.find_all(<span class="string">&#x27;p&#x27;</span>) <span class="comment"># 每一段用&#x27;p&#x27;隔开</span></span><br><span class="line">                link_text = <span class="string">&#x27;\n&#x27;</span>.join([p.get_text(strip=<span class="literal">True</span>) <span class="keyword">for</span> p <span class="keyword">in</span> paragraphs])</span><br><span class="line"></span><br><span class="line">                <span class="comment"># 写入打开的word文档</span></span><br><span class="line">                doc.add_paragraph(<span class="string">f&quot;Title: <span class="subst">&#123;title_text&#125;</span>&quot;</span>)</span><br><span class="line">                doc.add_paragraph(<span class="string">f&quot;Time: <span class="subst">&#123;timeo&#125;</span>&quot;</span>)</span><br><span class="line">                doc.add_paragraph(<span class="string">f&quot;Link: <span class="subst">&#123;absolute_link&#125;</span>&quot;</span>)</span><br><span class="line">                doc.add_paragraph(<span class="string">f&quot;Text:\n<span class="subst">&#123;link_text&#125;</span>&quot;</span>)</span><br><span class="line">                doc.add_paragraph(<span class="string">&#x27;-&#x27;</span> * <span class="number">30</span>)</span><br><span class="line">                random_sleep_time = random.uniform(<span class="number">1</span>, <span class="number">2</span>)</span><br><span class="line">                <span class="comment"># 执行随机停顿</span></span><br><span class="line">                time.sleep(random_sleep_time)</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&#x27;已经爬了<span class="subst">&#123;std&#125;</span>篇文章，<span class="subst">&#123;page_number&#125;</span>页，还剩<span class="subst">&#123;max_page-page_number&#125;</span>页&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 保存Word文档</span></span><br><span class="line">doc.save(<span class="string">&#x27;output.docx&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 关闭浏览器</span></span><br><span class="line">driver.quit()</span><br></pre></td></tr></table></figure>
+<h2 id="完工！"><a href="#完工！" class="headerlink" title="完工！"></a>完工！</h2><p><img src="https://cdn.jsdelivr.net/gh/Heisenberg10110/images@a3bff6235056131ac745bec7edf13129a95b0315/img/%E7%88%AC%E8%99%AB/%E5%AD%97%E6%95%B0.png"></p>
+<p>170万字 1400+篇文章！！！</p>
+]]></content>
+      <categories>
+        <category>美赛</category>
+      </categories>
+      <tags>
+        <tag>spider</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>美赛回顾(三) · 制图</title>
+    <url>/2024/02/13/%E7%BE%8E%E8%B5%9B%E5%9B%9E%E9%A1%BE-%E4%B8%89-%C2%B7%E5%88%B6%E5%9B%BE/</url>
+    <content><![CDATA[<h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>在前文<font face="华文琥珀" color="blue"><a href="http://heisenberg-szh.com/2024/02/13/%E7%BE%8E%E8%B5%9B%E5%9B%9E%E9%A1%BE-%E4%BA%8C-%C2%B7%E6%96%87%E6%9C%AC%E5%A4%84%E7%90%86/">美赛回顾(二) · 文本处理</a></font>中已经得到表格数据，找到了年份，月份，省份以及动物种类两两之间的关系。这篇文章将回顾将这些数据可视化的过程！<br><font face="幼圆" color="gray" size="2">以便投入到美术建模的美赛之中···<BR></BR></font></p>
+<span id="more"></span>
+<h1 id="数据形式"><a href="#数据形式" class="headerlink" title="数据形式"></a>数据形式</h1><p>这里用省份年份为例，作中国地图非法野生动物贸易数据的可视化。</p>
+<table>
+<thead>
+<tr>
+<th align="center">省份</th>
+<th align="center">上海市</th>
+<th align="center">云南省</th>
+<th align="center">内蒙古自治区</th>
+<th align="center">北京市</th>
+<th align="center">台湾省</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">SUM</td>
+<td align="center">18585</td>
+<td align="center">22545</td>
+<td align="center">13852</td>
+<td align="center">27439</td>
+<td align="center">2</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th align="center">省份</th>
+<th align="center">吉林省</th>
+<th align="center">四川省</th>
+<th align="center">天津市</th>
+<th align="center">宁夏回族自治区</th>
+<th align="center">安徽省</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">SUM</td>
+<td align="center">4260</td>
+<td align="center">28498</td>
+<td align="center">20377</td>
+<td align="center">6097</td>
+<td align="center">14374</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th align="center">省份</th>
+<th align="center">山东省</th>
+<th align="center">山西省</th>
+<th align="center">广东省</th>
+<th align="center">广西壮族自治区</th>
+<th align="center">新疆维吾尔自治区</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">SUM</td>
+<td align="center">28115</td>
+<td align="center">7463</td>
+<td align="center">42048</td>
+<td align="center">24932</td>
+<td align="center">9304</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th align="center">省份</th>
+<th align="center">江苏省</th>
+<th align="center">江西省</th>
+<th align="center">河北省</th>
+<th align="center">河南省</th>
+<th align="center">浙江省</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">SUM</td>
+<td align="center">29962</td>
+<td align="center">25821</td>
+<td align="center">22042</td>
+<td align="center">3444</td>
+<td align="center">15372</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th align="center">省份</th>
+<th align="center">海南省</th>
+<th align="center">湖北省</th>
+<th align="center">湖南省</th>
+<th align="center">澳门特别行政区</th>
+<th align="center">甘肃省</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">SUM</td>
+<td align="center">6323</td>
+<td align="center">17308</td>
+<td align="center">16968</td>
+<td align="center">0</td>
+<td align="center">3923</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th align="center">省份</th>
+<th align="center">福建省</th>
+<th align="center">西藏自治区</th>
+<th align="center">贵州省</th>
+<th align="center">辽宁省</th>
+<th align="center">重庆市</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">SUM</td>
+<td align="center">16697</td>
+<td align="center">4781</td>
+<td align="center">12736</td>
+<td align="center">14291</td>
+<td align="center">9265</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th align="center">省份</th>
+<th align="center">陕西省</th>
+<th align="center">青海省</th>
+<th align="center">香港特别行政区</th>
+<th align="center">黑龙江省</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">SUM</td>
+<td align="center">4184</td>
+<td align="center">8023</td>
+<td align="center">174</td>
+<td align="center">5605</td>
+</tr>
+</tbody></table>
+<h1 id="作图"><a href="#作图" class="headerlink" title="作图"></a>作图</h1><h2 id="导入库和数据"><a href="#导入库和数据" class="headerlink" title="导入库和数据"></a>导入库和数据</h2><figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> pyecharts <span class="keyword">import</span> options <span class="keyword">as</span> opts</span><br><span class="line"><span class="keyword">from</span> pyecharts.charts <span class="keyword">import</span> Map</span><br><span class="line"><span class="keyword">from</span> pyecharts.<span class="built_in">globals</span> <span class="keyword">import</span> ThemeType</span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="comment"># 获取桌面路径</span></span><br><span class="line">desktop_path = os.path.join(os.path.expanduser(<span class="string">&quot;~&quot;</span>), <span class="string">&quot;Desktop&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 生成 CSV 文件的完整路径</span></span><br><span class="line">csv_file_path = os.path.join(desktop_path, <span class="string">&quot;sheng_year.csv&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用 pandas 读取 CSV 文件</span></span><br><span class="line">data = pd.read_csv(csv_file_path, encoding=<span class="string">&#x27;GBK&#x27;</span>)</span><br><span class="line"><span class="comment"># GBK或是UTF-8都可以试试！</span></span><br><span class="line"><span class="built_in">print</span>(data)</span><br><span class="line"><span class="comment"># 看看数据是不是正确形式</span></span><br></pre></td></tr></table></figure>
+<h2 id="创建图表"><a href="#创建图表" class="headerlink" title="创建图表"></a>创建图表</h2><figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 创建 Map 图表</span></span><br><span class="line">map_chart = Map(init_opts=opts.InitOpts(theme=ThemeType.LIGHT))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置参数</span></span><br><span class="line"><span class="keyword">from</span> pyecharts <span class="keyword">import</span> options <span class="keyword">as</span> opts</span><br><span class="line">province_column = data.columns[<span class="number">0</span>]</span><br><span class="line">data_column = data.columns[<span class="number">1</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 将 zip 结果转换为列表</span></span><br><span class="line">data_list = <span class="built_in">list</span>(<span class="built_in">zip</span>(data[province_column], data[data_column]))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 添加数据</span></span><br><span class="line">map_chart.add(<span class="string">&quot;China Map&quot;</span>, data_list,</span><br><span class="line">              maptype=<span class="string">&quot;china&quot;</span>, label_opts=opts.LabelOpts(is_show=<span class="literal">False</span>),</span><br><span class="line">              is_map_symbol_show=<span class="literal">False</span>)</span><br><span class="line"><span class="comment"># 设置全局参数</span></span><br><span class="line">map_chart.set_global_opts(</span><br><span class="line">    title_opts=opts.TitleOpts(title=<span class="string">&quot;World Map&quot;</span>),</span><br><span class="line">    visualmap_opts=opts.VisualMapOpts(</span><br><span class="line">        is_piecewise=<span class="literal">False</span>,</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 定义红橙黄绿蓝紫的渐变颜色</span></span><br><span class="line">        range_color=[<span class="string">&quot;#288A2B&quot;</span>, <span class="string">&quot;#EAC863&quot;</span>, <span class="string">&quot;#D84D5C&quot;</span>],</span><br><span class="line">        max_=<span class="number">42000</span>,  <span class="comment"># 最大值</span></span><br><span class="line">        min_=<span class="number">0</span>,  <span class="comment"># 最小值</span></span><br><span class="line">        orient=<span class="string">&quot;horizontal&quot;</span>,  <span class="comment"># 渐变色方向</span></span><br><span class="line">        pos_top=<span class="string">&quot;80%&quot;</span>,  <span class="comment"># 设置位置</span></span><br><span class="line">        pos_right=<span class="string">&quot;55%&quot;</span>,</span><br><span class="line">    ),</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 绘制地图</span></span><br><span class="line">map_chart.render(path=<span class="string">&quot;test_bar.html&quot;</span>)</span><br><span class="line"><span class="keyword">import</span> webbrowser</span><br><span class="line">webbrowser.<span class="built_in">open</span>(<span class="string">&quot;test_bar.html&quot;</span>)</span><br></pre></td></tr></table></figure>
+<p><font size="5">效果：</font><br><img src="https://cdn.jsdelivr.net/gh/Heisenberg10110/images@main/img/%E5%88%B6%E5%9B%BE/china.jpg"></p>
+<h1 id="美术建模！"><a href="#美术建模！" class="headerlink" title="美术建模！"></a>美术建模！</h1><p>其他工具也很重要！！ppt和photoshop的使用可以让建模更加<font face="幼圆" color="#00a8cc" size="4">美术!</font><br>让我们来欣赏~~~~</p>
+<center class="half">
+<img src="https://cdn.jsdelivr.net/gh/Heisenberg10110/images@main/img/%E5%88%B6%E5%9B%BE/world.jpg" width="00/">
+<img src="https://cdn.jsdelivr.net/gh/Heisenberg10110/images@main/img/%E5%88%B6%E5%9B%BE/%E7%89%A9%E7%A7%8D.jpg" width="200/">
+</center>
+]]></content>
+      <categories>
+        <category>美赛</category>
+      </categories>
+      <tags>
+        <tag>map</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>美赛回顾(二) · 文本处理</title>
+    <url>/2024/02/13/%E7%BE%8E%E8%B5%9B%E5%9B%9E%E9%A1%BE-%E4%BA%8C-%C2%B7%E6%96%87%E6%9C%AC%E5%A4%84%E7%90%86/</url>
+    <content><![CDATA[<h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>由前文<font face="华文琥珀" color="blue"><a href="http://heisenberg-szh.com/2024/02/10/%E7%BE%8E%E8%B5%9B%E5%9B%9E%E9%A1%BE-%E4%B8%80-%C2%B7%E7%88%AC%E8%99%AB/">美赛回顾(一) · 爬虫</a></font>已经爬取到了若干非法野生动物贸易的审判书文本信息，现在我们尝试获取文本之中的信息并制成可用表格。</p>
+<h1 id="数据形式"><a href="#数据形式" class="headerlink" title="数据形式"></a>数据形式</h1><p>- - - - - - - - - - - - - - - - - - - - -<br>Title: 云南普洱一男子非法运输穿山甲片被刑拘<br>Time: 2019-12-07 21:39:58<br>Link: <a href="https://www.cxxxxxxxt.org/article/detail/2019/12/id/4709300.shtml">https://www.cxxxxxxxt.org/article/detail/2019/12/id/4709300.shtml</a><br>Text:<br>近日，云南省普洱市宁洱县森林公安局查获一起非法运输珍贵濒危野生动物制品案，缴获国家二级保护动物穿山甲甲片0.95千克，抓获犯罪嫌疑人一名。<br>据介绍，宁洱县公安局民警在检查站开展公开查缉时，发现一名男子所骑的摩托车后备箱内一个塑料袋有疑似野生动物穿山甲制品，于是把案件移交给宁洱县森林公安局。<br>经审讯，摩托车驾驶员吕某昌交代，一个朋友托他从境外买点穿山甲片做药引子，并通过微信向他转了2000多元人民币。吕某昌随后在境外某集市花500多元人民币购买了这些穿山甲片，并驾驶自己的摩托车非法将穿山甲片运输入境。<br>经鉴定，这些制品确系国家二级保护野生动物穿山甲的甲片，数量为0.95千克。因涉嫌非法收购、运输珍贵濒危野生动物制品，吕某昌目前已被公安机关刑事拘留，案件还在进一步办理中。<br>- - - - - - - - - - - - - - - - - - - - -</p>
+<span id="more"></span>
+<h1 id="文本分析"><a href="#文本分析" class="headerlink" title="文本分析"></a>文本分析</h1><p>由于美赛时间紧迫，需要较短时间得出可用数据，私以为提取手法是过于粗糙的。今适逢春节，后续大创也事情繁多，这里就不重新修改，源码也就不放出来了T.T<br>简单说说大概思路吧~</p>
+<h2 id="预处理"><a href="#预处理" class="headerlink" title="预处理"></a>预处理</h2><p>把多次爬取的文本直接合成为一个word录入字符串变量，建立set集合，把链接相同的文章去除，达到不重复的目的。</p>
+<h2 id="提取文本信息"><a href="#提取文本信息" class="headerlink" title="提取文本信息"></a>提取文本信息</h2><p>设立滑窗，提取关键文本（如龟，竹鼠，虎 ···）附近的语段，采用正则表达式或自然语言模型如word2vec，甚至用本体提取等知识图谱相关知识可以提取地点，年份，人物，野生动物种类，数目等信息（如0.95千克穿山甲；316只竹鼠····）</p>
+<h1 id="有趣的点"><a href="#有趣的点" class="headerlink" title="有趣的点"></a>有趣的点</h1><p>采取字典可以便利地录入信息：<br>每一个link作为key便于提取文章的信息。</p>
+<p>采用多层字典，便捷地生成多层信息！</p>
+<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 年份字典</span></span><br><span class="line">year_phrases = [<span class="number">2016</span>, <span class="number">2017</span>, <span class="number">2018</span>, <span class="number">2019</span>, <span class="number">2020</span>, <span class="number">2021</span>, <span class="number">2022</span>, <span class="number">2023</span>, <span class="number">2024</span>]</span><br><span class="line">year_phrases_dict = &#123;year: defaultdict(<span class="built_in">int</span>) <span class="keyword">for</span> year <span class="keyword">in</span> year_phrases&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 省份内层字典</span></span><br><span class="line">sheng_phrases = [ </span><br><span class="line"><span class="string">&quot;河北&quot;</span>, <span class="string">&quot;山西&quot;</span>, <span class="string">&quot;辽宁&quot;</span>, <span class="string">&quot;吉林&quot;</span>, <span class="string">&quot;黑龙江&quot;</span>, <span class="string">&quot;江苏&quot;</span>, <span class="string">&quot;浙江&quot;</span>, <span class="string">&quot;安徽&quot;</span>, </span><br><span class="line"><span class="string">&quot;福建&quot;</span>, <span class="string">&quot;江西&quot;</span>, <span class="string">&quot;山东&quot;</span>, <span class="string">&quot;河南&quot;</span>, <span class="string">&quot;湖北&quot;</span>, <span class="string">&quot;湖南&quot;</span>, <span class="string">&quot;广东&quot;</span>, <span class="string">&quot;海南&quot;</span>, </span><br><span class="line"><span class="string">&quot;四川&quot;</span>, <span class="string">&quot;贵州&quot;</span>, <span class="string">&quot;云南&quot;</span>, <span class="string">&quot;陕西&quot;</span>,<span class="string">&quot;甘肃&quot;</span>, <span class="string">&quot;青海&quot;</span>, <span class="string">&quot;台湾&quot;</span>, <span class="string">&quot;内蒙&quot;</span>, </span><br><span class="line"><span class="string">&quot;广西&quot;</span>, <span class="string">&quot;西藏&quot;</span>, <span class="string">&quot;宁夏&quot;</span>, <span class="string">&quot;新疆&quot;</span>, <span class="string">&quot;北京&quot;</span>, <span class="string">&quot;天津&quot;</span>, <span class="string">&quot;上海&quot;</span>, <span class="string">&quot;重庆&quot;</span>, <span class="string">&quot;香港&quot;</span>, <span class="string">&quot;澳门&quot;</span>]</span><br><span class="line">·</span><br><span class="line">·</span><br><span class="line">·</span><br><span class="line">·</span><br><span class="line">·</span><br><span class="line">·</span><br><span class="line"><span class="keyword">for</span> year_ <span class="keyword">in</span> year_phrases_dict:</span><br><span class="line">  <span class="keyword">if</span> year_ == year:</span><br><span class="line">      year_phrases_dict[year][sheng] += extract_and_sum_numbers(sentence)</span><br></pre></td></tr></table></figure>
+<BR>
+
+<p>建立字典时定义了内层省份字典是defaultdict，遇到新出现的key时自动初始化为0，达到二维化数据的目的！稍后把提取到的数据变为Excel等文件就变得十分容易！</p>
+</BR>]]></content>
+      <categories>
+        <category>美赛</category>
+      </categories>
+      <tags>
+        <tag>NLP</tag>
       </tags>
   </entry>
 </search>
