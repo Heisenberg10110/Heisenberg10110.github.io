@@ -153,169 +153,26 @@
 </tbody></table>
 <h1 id="作图"><a href="#作图" class="headerlink" title="作图"></a>作图</h1><h2 id="导入库和数据"><a href="#导入库和数据" class="headerlink" title="导入库和数据"></a>导入库和数据</h2><figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> pyecharts <span class="keyword">import</span> options <span class="keyword">as</span> opts</span><br><span class="line"><span class="keyword">from</span> pyecharts.charts <span class="keyword">import</span> Map</span><br><span class="line"><span class="keyword">from</span> pyecharts.<span class="built_in">globals</span> <span class="keyword">import</span> ThemeType</span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="comment"># 获取桌面路径</span></span><br><span class="line">desktop_path = os.path.join(os.path.expanduser(<span class="string">&quot;~&quot;</span>), <span class="string">&quot;Desktop&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 生成 CSV 文件的完整路径</span></span><br><span class="line">csv_file_path = os.path.join(desktop_path, <span class="string">&quot;sheng_year.csv&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用 pandas 读取 CSV 文件</span></span><br><span class="line">data = pd.read_csv(csv_file_path, encoding=<span class="string">&#x27;GBK&#x27;</span>)</span><br><span class="line"><span class="comment"># GBK或是UTF-8都可以试试！</span></span><br><span class="line"><span class="built_in">print</span>(data)</span><br><span class="line"><span class="comment"># 看看数据是不是正确形式</span></span><br></pre></td></tr></table></figure>
 <h2 id="创建图表"><a href="#创建图表" class="headerlink" title="创建图表"></a>创建图表</h2><figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 创建 Map 图表</span></span><br><span class="line">map_chart = Map(init_opts=opts.InitOpts(theme=ThemeType.LIGHT))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置参数</span></span><br><span class="line"><span class="keyword">from</span> pyecharts <span class="keyword">import</span> options <span class="keyword">as</span> opts</span><br><span class="line">province_column = data.columns[<span class="number">0</span>]</span><br><span class="line">data_column = data.columns[<span class="number">1</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 将 zip 结果转换为列表</span></span><br><span class="line">data_list = <span class="built_in">list</span>(<span class="built_in">zip</span>(data[province_column], data[data_column]))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 添加数据</span></span><br><span class="line">map_chart.add(<span class="string">&quot;China Map&quot;</span>, data_list,</span><br><span class="line">              maptype=<span class="string">&quot;china&quot;</span>, label_opts=opts.LabelOpts(is_show=<span class="literal">False</span>),</span><br><span class="line">              is_map_symbol_show=<span class="literal">False</span>)</span><br><span class="line"><span class="comment"># 设置全局参数</span></span><br><span class="line">map_chart.set_global_opts(</span><br><span class="line">    title_opts=opts.TitleOpts(title=<span class="string">&quot;World Map&quot;</span>),</span><br><span class="line">    visualmap_opts=opts.VisualMapOpts(</span><br><span class="line">        is_piecewise=<span class="literal">False</span>,</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 定义红橙黄绿蓝紫的渐变颜色</span></span><br><span class="line">        range_color=[<span class="string">&quot;#288A2B&quot;</span>, <span class="string">&quot;#EAC863&quot;</span>, <span class="string">&quot;#D84D5C&quot;</span>],</span><br><span class="line">        max_=<span class="number">42000</span>,  <span class="comment"># 最大值</span></span><br><span class="line">        min_=<span class="number">0</span>,  <span class="comment"># 最小值</span></span><br><span class="line">        orient=<span class="string">&quot;horizontal&quot;</span>,  <span class="comment"># 渐变色方向</span></span><br><span class="line">        pos_top=<span class="string">&quot;80%&quot;</span>,  <span class="comment"># 设置位置</span></span><br><span class="line">        pos_right=<span class="string">&quot;55%&quot;</span>,</span><br><span class="line">    ),</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 绘制地图</span></span><br><span class="line">map_chart.render(path=<span class="string">&quot;test_bar.html&quot;</span>)</span><br><span class="line"><span class="keyword">import</span> webbrowser</span><br><span class="line">webbrowser.<span class="built_in">open</span>(<span class="string">&quot;test_bar.html&quot;</span>)</span><br></pre></td></tr></table></figure>
-<p><font size="5">效果：</font></p>
-<h1 id="美术建模！"><a href="#美术建模！" class="headerlink" title="美术建模！"></a>美术建模！</h1><p>其他工具也很重要！！ppt和photoshop的使用可以让建模更加<font face="幼圆" color="#00a8cc" size="4">美术!</font><br>让我们来欣赏~~~~<br><img src="https://cdn.jsdelivr.net/gh/Heisenberg10110/images@main/img/%E5%88%B6%E5%9B%BE/world.jpg" alt="ddd"><br>aaa<br><img src="https://cdn.jsdelivr.net/gh/Heisenberg10110/images@main/img/%E5%88%B6%E5%9B%BE/world.jpg" width="10000/"><br><img src="https://cdn.jsdelivr.net/gh/Heisenberg10110/images@main/img/%E5%88%B6%E5%9B%BE/%E7%89%A9%E7%A7%8D.jpg"><br><img src="https://cdn.jsdelivr.net/gh/Heisenberg10110/images@main/img/%E5%88%B6%E5%9B%BE/%E7%89%A9%E7%A7%8D-%E6%9C%88%E4%BB%BD.jpg"><br><img src="https://cdn.jsdelivr.net/gh/Heisenberg10110/images@main/img/%E5%88%B6%E5%9B%BE/%E8%81%9A%E7%B1%BB.jpg"><br><img src="https://cdn.jsdelivr.net/gh/Heisenberg10110/images@main/img/%E5%88%B6%E5%9B%BE/%E6%B5%81%E7%A8%8B%E5%9B%BE.jpg"></p>
-]]></content>
-      <categories>
-        <category>美赛</category>
-      </categories>
-      <tags>
-        <tag>map</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>美赛回顾(三) · 制图</title>
-    <url>/2024/02/13/%E7%BE%8E%E8%B5%9B%E5%9B%9E%E9%A1%BE-%E4%B8%89-%C2%B7%E5%88%B6%E5%9B%BE/</url>
-    <content><![CDATA[<h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>在前文<font face="华文琥珀" color="blue"><a href="http://heisenberg-szh.com/2024/02/13/%E7%BE%8E%E8%B5%9B%E5%9B%9E%E9%A1%BE-%E4%BA%8C-%C2%B7%E6%96%87%E6%9C%AC%E5%A4%84%E7%90%86/">美赛回顾(二) · 文本处理</a></font>中已经得到表格数据，找到了年份，月份，省份以及动物种类两两之间的关系。这篇文章将回顾将这些数据可视化的过程！<br><font face="幼圆" color="gray" size="2">以便投入到美术建模的美赛之中···<BR></BR></font></p>
-<span id="more"></span>
-<h1 id="数据形式"><a href="#数据形式" class="headerlink" title="数据形式"></a>数据形式</h1><p>这里用省份年份为例，作中国地图非法野生动物贸易数据的可视化。</p>
-<table>
-<thead>
-<tr>
-<th align="center">省份</th>
-<th align="center">上海市</th>
-<th align="center">云南省</th>
-<th align="center">内蒙古自治区</th>
-<th align="center">北京市</th>
-<th align="center">台湾省</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">SUM</td>
-<td align="center">18585</td>
-<td align="center">22545</td>
-<td align="center">13852</td>
-<td align="center">27439</td>
-<td align="center">2</td>
-</tr>
-</tbody></table>
-<table>
-<thead>
-<tr>
-<th align="center">省份</th>
-<th align="center">吉林省</th>
-<th align="center">四川省</th>
-<th align="center">天津市</th>
-<th align="center">宁夏回族自治区</th>
-<th align="center">安徽省</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">SUM</td>
-<td align="center">4260</td>
-<td align="center">28498</td>
-<td align="center">20377</td>
-<td align="center">6097</td>
-<td align="center">14374</td>
-</tr>
-</tbody></table>
-<table>
-<thead>
-<tr>
-<th align="center">省份</th>
-<th align="center">山东省</th>
-<th align="center">山西省</th>
-<th align="center">广东省</th>
-<th align="center">广西壮族自治区</th>
-<th align="center">新疆维吾尔自治区</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">SUM</td>
-<td align="center">28115</td>
-<td align="center">7463</td>
-<td align="center">42048</td>
-<td align="center">24932</td>
-<td align="center">9304</td>
-</tr>
-</tbody></table>
-<table>
-<thead>
-<tr>
-<th align="center">省份</th>
-<th align="center">江苏省</th>
-<th align="center">江西省</th>
-<th align="center">河北省</th>
-<th align="center">河南省</th>
-<th align="center">浙江省</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">SUM</td>
-<td align="center">29962</td>
-<td align="center">25821</td>
-<td align="center">22042</td>
-<td align="center">3444</td>
-<td align="center">15372</td>
-</tr>
-</tbody></table>
-<table>
-<thead>
-<tr>
-<th align="center">省份</th>
-<th align="center">海南省</th>
-<th align="center">湖北省</th>
-<th align="center">湖南省</th>
-<th align="center">澳门特别行政区</th>
-<th align="center">甘肃省</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">SUM</td>
-<td align="center">6323</td>
-<td align="center">17308</td>
-<td align="center">16968</td>
-<td align="center">0</td>
-<td align="center">3923</td>
-</tr>
-</tbody></table>
-<table>
-<thead>
-<tr>
-<th align="center">省份</th>
-<th align="center">福建省</th>
-<th align="center">西藏自治区</th>
-<th align="center">贵州省</th>
-<th align="center">辽宁省</th>
-<th align="center">重庆市</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">SUM</td>
-<td align="center">16697</td>
-<td align="center">4781</td>
-<td align="center">12736</td>
-<td align="center">14291</td>
-<td align="center">9265</td>
-</tr>
-</tbody></table>
-<table>
-<thead>
-<tr>
-<th align="center">省份</th>
-<th align="center">陕西省</th>
-<th align="center">青海省</th>
-<th align="center">香港特别行政区</th>
-<th align="center">黑龙江省</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">SUM</td>
-<td align="center">4184</td>
-<td align="center">8023</td>
-<td align="center">174</td>
-<td align="center">5605</td>
-</tr>
-</tbody></table>
-<h1 id="作图"><a href="#作图" class="headerlink" title="作图"></a>作图</h1><h2 id="导入库和数据"><a href="#导入库和数据" class="headerlink" title="导入库和数据"></a>导入库和数据</h2><figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> pyecharts <span class="keyword">import</span> options <span class="keyword">as</span> opts</span><br><span class="line"><span class="keyword">from</span> pyecharts.charts <span class="keyword">import</span> Map</span><br><span class="line"><span class="keyword">from</span> pyecharts.<span class="built_in">globals</span> <span class="keyword">import</span> ThemeType</span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="comment"># 获取桌面路径</span></span><br><span class="line">desktop_path = os.path.join(os.path.expanduser(<span class="string">&quot;~&quot;</span>), <span class="string">&quot;Desktop&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 生成 CSV 文件的完整路径</span></span><br><span class="line">csv_file_path = os.path.join(desktop_path, <span class="string">&quot;sheng_year.csv&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用 pandas 读取 CSV 文件</span></span><br><span class="line">data = pd.read_csv(csv_file_path, encoding=<span class="string">&#x27;GBK&#x27;</span>)</span><br><span class="line"><span class="comment"># GBK或是UTF-8都可以试试！</span></span><br><span class="line"><span class="built_in">print</span>(data)</span><br><span class="line"><span class="comment"># 看看数据是不是正确形式</span></span><br></pre></td></tr></table></figure>
-<h2 id="创建图表"><a href="#创建图表" class="headerlink" title="创建图表"></a>创建图表</h2><figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 创建 Map 图表</span></span><br><span class="line">map_chart = Map(init_opts=opts.InitOpts(theme=ThemeType.LIGHT))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置参数</span></span><br><span class="line"><span class="keyword">from</span> pyecharts <span class="keyword">import</span> options <span class="keyword">as</span> opts</span><br><span class="line">province_column = data.columns[<span class="number">0</span>]</span><br><span class="line">data_column = data.columns[<span class="number">1</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 将 zip 结果转换为列表</span></span><br><span class="line">data_list = <span class="built_in">list</span>(<span class="built_in">zip</span>(data[province_column], data[data_column]))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 添加数据</span></span><br><span class="line">map_chart.add(<span class="string">&quot;China Map&quot;</span>, data_list,</span><br><span class="line">              maptype=<span class="string">&quot;china&quot;</span>, label_opts=opts.LabelOpts(is_show=<span class="literal">False</span>),</span><br><span class="line">              is_map_symbol_show=<span class="literal">False</span>)</span><br><span class="line"><span class="comment"># 设置全局参数</span></span><br><span class="line">map_chart.set_global_opts(</span><br><span class="line">    title_opts=opts.TitleOpts(title=<span class="string">&quot;World Map&quot;</span>),</span><br><span class="line">    visualmap_opts=opts.VisualMapOpts(</span><br><span class="line">        is_piecewise=<span class="literal">False</span>,</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 定义红橙黄绿蓝紫的渐变颜色</span></span><br><span class="line">        range_color=[<span class="string">&quot;#288A2B&quot;</span>, <span class="string">&quot;#EAC863&quot;</span>, <span class="string">&quot;#D84D5C&quot;</span>],</span><br><span class="line">        max_=<span class="number">42000</span>,  <span class="comment"># 最大值</span></span><br><span class="line">        min_=<span class="number">0</span>,  <span class="comment"># 最小值</span></span><br><span class="line">        orient=<span class="string">&quot;horizontal&quot;</span>,  <span class="comment"># 渐变色方向</span></span><br><span class="line">        pos_top=<span class="string">&quot;80%&quot;</span>,  <span class="comment"># 设置位置</span></span><br><span class="line">        pos_right=<span class="string">&quot;55%&quot;</span>,</span><br><span class="line">    ),</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 绘制地图</span></span><br><span class="line">map_chart.render(path=<span class="string">&quot;test_bar.html&quot;</span>)</span><br><span class="line"><span class="keyword">import</span> webbrowser</span><br><span class="line">webbrowser.<span class="built_in">open</span>(<span class="string">&quot;test_bar.html&quot;</span>)</span><br></pre></td></tr></table></figure>
-<p><font size="5">效果：</font><br><img src="https://cdn.jsdelivr.net/gh/Heisenberg10110/images@main/img/%E5%88%B6%E5%9B%BE/china.jpg"></p>
-<h1 id="美术建模！"><a href="#美术建模！" class="headerlink" title="美术建模！"></a>美术建模！</h1><p>其他工具也很重要！！ppt和photoshop的使用可以让建模更加<font face="幼圆" color="#00a8cc" size="4">美术!</font><br>让我们来欣赏~~~~</p>
-<center class="half">
-<img src="https://cdn.jsdelivr.net/gh/Heisenberg10110/images@main/img/%E5%88%B6%E5%9B%BE/world.jpg" width="00/">
-<img src="https://cdn.jsdelivr.net/gh/Heisenberg10110/images@main/img/%E5%88%B6%E5%9B%BE/%E7%89%A9%E7%A7%8D.jpg" width="200/">
-</center>
-]]></content>
+<p><font size="5">效果：</font><br><img src="https://cdn.jsdelivr.net/gh/Heisenberg10110/images@main/img/%E5%88%B6%E5%9B%BE/china.jpg" alt="中国非法野生动物贸易数目分布"></p>
+<center><i><b>Figure1</b></i><font color="gray"> | <i></i></font>中国非法野生动物贸易数目分布</center>
+
+<h1 id="美术建模！"><a href="#美术建模！" class="headerlink" title="美术建模！"></a>美术建模！</h1><p>其他工具也很重要！！ppt和photoshop的使用可以让建模更加<font face="幼圆" color="#00a8cc" size="4">美术!</font></p>
+<p>让我们来欣赏~~~~<br><img src="https://cdn.jsdelivr.net/gh/Heisenberg10110/images@main/img/%E5%88%B6%E5%9B%BE/world.jpg"></p>
+<center><i><b>Figure2</b></i><font color="gray"> | <i></i></font>世界治理非法野生动物贸易兴趣（interest）分布</center>
+
+<p><img src="https://cdn.jsdelivr.net/gh/Heisenberg10110/images@main/img/%E5%88%B6%E5%9B%BE/%E7%89%A9%E7%A7%8D.jpg"></p>
+<center><i><b>Figure3</b></i><font color="gray"> | <i></i></font>中国非法野生动物贸易：物种 - 比例分布</center>
+
+<p><img src="https://cdn.jsdelivr.net/gh/Heisenberg10110/images@main/img/%E5%88%B6%E5%9B%BE/%E7%89%A9%E7%A7%8D-%E6%9C%88%E4%BB%BD.jpg"></p>
+<center><i><b>Figure4</b></i><font color="gray"> | <i></i></font>中国非法野生动物贸易：物种 - 时间分布</center>
+
+<p><img src="https://cdn.jsdelivr.net/gh/Heisenberg10110/images@main/img/%E5%88%B6%E5%9B%BE/%E8%81%9A%E7%B1%BB.jpg"></p>
+<center><i><b>Figure5</b></i><font color="gray"> | <i></i></font>世界治理非法野生动物贸易兴趣（interest） - 能力（power and resource）聚类</center>
+
+<p><img src="https://cdn.jsdelivr.net/gh/Heisenberg10110/images@main/img/%E5%88%B6%E5%9B%BE/%E6%B5%81%E7%A8%8B%E5%9B%BE.jpg"></p>
+<center><i><b>Figure6</b></i><font color="gray"> | <i></i></font>流程图（一小时赶工现学PPT+制作o(╥﹏╥)o）</center>
+
+<h1 id="END"><a href="#END" class="headerlink" title="END"></a>END</h1><center><font face="华文琥珀" size="5" color="gray">纪念首次参加却收获颇多的建模大赛</font></center>]]></content>
       <categories>
         <category>美赛</category>
       </categories>
